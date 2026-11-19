@@ -96,3 +96,17 @@ No cadastro e na atualização de livros, envie `"autor": {"id": 1}` com o ID de
 | DEV 2 | `feature/livros` | Entidade, repositório, controller, testes e telas de livros |
 
 A dupla compartilha a integração das rotas, o cliente Axios, o Docker, o CI e a documentação. Cada integrante revisa o Pull Request do colega no GitHub.
+
+## Evidências da entrega
+
+- No frontend, use `npm install --package-lock-only` para gerar o `package-lock.json` e faça commit do arquivo.
+- Capture o resultado de `mvn test` e a saída de `./scripts/teste-api.sh`. O script cria dados que podem ser usados nas capturas das listas e dos formulários.
+- No navegador, capture `/autores`, `/autores/novo`, `/livros` e `/livros/novo`. Abra o seletor de autor na última tela.
+- No GitHub, registre os dois Pull Requests com a revisão do colega e capture a execução do workflow na aba Actions.
+
+O ZIP inclui `biblioteca-web.bundle` com o histórico Git. Para consultar as branches em uma nova cópia, execute na pasta em que o ZIP foi extraído:
+
+```sh
+git clone biblioteca-web.bundle biblioteca-web-historico
+git -C biblioteca-web-historico branch -a
+```
