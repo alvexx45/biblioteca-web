@@ -88,7 +88,7 @@ Com a aplicação em execução, rode o teste de aceitação na raiz. Ele cadast
 | DELETE | `/api/autores/{id}`, `/api/livros/{id}` | 200 ou 404. O autor com livros retorna 409 |
 | GET | `/api/livros/autor/{autorId}` | 200, com a lista de livros do autor |
 
-No cadastro e na atualização de livros, envie `"autor": {"id": 1}` com o ID de um autor existente. Os erros de validação retornam 400. A API retorna 404 quando o autor informado no livro não existe.
+No cadastro e na atualização de livros, envie `"autor": {"id": 1}` com o ID de um autor existente. Os erros de validação retornam 400. A API retorna 400 quando o autor informado no livro não existe.
 
 ## Divisão da dupla
 
