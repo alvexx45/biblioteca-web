@@ -55,6 +55,8 @@ O servidor de desenvolvimento encaminha as requisições `/api` ao backend. O Ng
 
 ## Testes
 
+Confira com `mvn -v` se o Maven está usando o JDK 17. Se houver outra versão ativa, aponte `JAVA_HOME` para a instalação do JDK 17 antes de rodar os testes.
+
 ```sh
 cd backend
 mvn test
