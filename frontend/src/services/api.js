@@ -13,6 +13,7 @@ function criarServico(recurso) {
 }
 
 export const autorService = criarServico('/autores');
+export const livroService = criarServico('/livros');
 
 export function mensagemDeErro(erro, mensagemPadrao) {
   return erro.response?.data?.detail || mensagemPadrao;
