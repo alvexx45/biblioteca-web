@@ -5,6 +5,9 @@ import com.biblioteca.model.Livro;
 import com.biblioteca.repository.AutorRepository;
 import com.biblioteca.repository.LivroRepository;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +31,8 @@ public class LivroController {
     }
 
     @PostMapping
-    public ResponseEntity<Livro> criar(@Valid @RequestBody Livro dados) {
-        dados.setId(null);
-        dados.setAutor(resolverAutor(dados.getAutor()));
-        Livro salvo = livros.save(dados);
+    public ResponseEntity<Livro> criar(@Valid @RequestBody DadosLivro dados) {
+        Livro salvo = livros.save(preencher(new Livro(), dados));
         return ResponseEntity.created(URI.create("/api/livros/" + salvo.getId())).body(salvo);
     }
 
@@ -45,7 +46,6 @@ public class LivroController {
         return ResponseEntity.of(livros.findById(id));
     }
 
-    // (extra) livros de um autor
     @GetMapping("/autor/{autorId}")
     public List<Livro> listarPorAutor(@PathVariable Long autorId) {
         return livros.findByAutorIdOrderByTituloAsc(autorId);
@@ -53,14 +53,9 @@ public class LivroController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<Livro> atualizar(@PathVariable Long id, @Valid @RequestBody Livro dados) {
+    public ResponseEntity<Livro> atualizar(@PathVariable Long id, @Valid @RequestBody DadosLivro dados) {
         Livro livro = buscarOuFalhar(id);
-        livro.setTitulo(dados.getTitulo());
-        livro.setIsbn(dados.getIsbn());
-        livro.setAnoPublicacao(dados.getAnoPublicacao());
-        livro.setGenero(dados.getGenero());
-        livro.setAutor(resolverAutor(dados.getAutor()));
-        return ResponseEntity.ok(livros.save(livro));
+        return ResponseEntity.ok(livros.save(preencher(livro, dados)));
     }
 
     @DeleteMapping("/{id}")
@@ -74,12 +69,24 @@ public class LivroController {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Livro não encontrado."));
     }
 
-    /** O JSON traz só {"id": n}; aqui buscamos o autor completo (e recusamos id inexistente). */
-    private Autor resolverAutor(Autor referencia) {
-        if (referencia.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Informe o id do autor.");
-        }
-        return autores.findById(referencia.getId()).orElseThrow(
+    private Livro preencher(Livro livro, DadosLivro dados) {
+        Autor autor = autores.findById(dados.autor().id()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autor não encontrado."));
+        livro.setTitulo(dados.titulo());
+        livro.setIsbn(dados.isbn());
+        livro.setAnoPublicacao(dados.anoPublicacao());
+        livro.setGenero(dados.genero());
+        livro.setAutor(autor);
+        return livro;
     }
+
+    public record DadosLivro(
+            @NotBlank @Size(max = 200) String titulo,
+            @Size(max = 20) String isbn,
+            Integer anoPublicacao,
+            @Size(max = 50) String genero,
+            @NotNull @Valid ReferenciaAutor autor
+    ) {}
+
+    public record ReferenciaAutor(@NotNull Long id) {}
 }
